@@ -1,13 +1,12 @@
 /**
  * Dramaboxd — Global Core Application Script
- * Handles Theme Switching, AJAX API Client, Modals, Auth State, and Toasts
+ * Pure JavaScript, HTML, and CSS.
+ * Handles Theme Switching, Client Services, Modals, Auth State, and Toasts.
  */
 
 const App = (() => {
-    // Current authenticated user state (cached in memory and localStorage for mock/preview resilience)
     let currentUser = null;
 
-    // Initialize application when DOM is ready
     function init() {
         initTheme();
         initAuth();
@@ -53,7 +52,6 @@ const App = (() => {
         document.documentElement.setAttribute('data-theme', themeName);
         localStorage.setItem('dramaboxd_theme', themeName);
 
-        // Update active class in dropdown
         document.querySelectorAll('.theme-option').forEach(opt => {
             if (opt.getAttribute('data-theme-set') === themeName) {
                 opt.classList.add('active');
@@ -62,7 +60,6 @@ const App = (() => {
             }
         });
 
-        // Update button label
         const currentThemeLabel = document.getElementById('currentThemeLabel');
         if (currentThemeLabel) {
             const labels = {
@@ -76,44 +73,7 @@ const App = (() => {
     }
 
     /* -------------------------------------------------------------------------
-       AJAX API WRAPPER
-       Gracefully handles PHP backend or fallback seed JSON for static preview
-       ------------------------------------------------------------------------- */
-    async function apiRequest(endpoint, options = {}) {
-        try {
-            const response = await fetch(endpoint, options);
-            if (!response.ok) {
-                throw new Error(`HTTP error ${response.status}`);
-            }
-            return await response.json();
-        } catch (err) {
-            console.warn(`Direct PHP endpoint [${endpoint}] failed. Attempting seed fallback.`, err);
-            // Fallback for direct file preview (file:// or static server without PHP active)
-            try {
-                const fallback = await fetch('api/data/seed_data.json');
-                const seed = await fallback.json();
-                if (endpoint.includes('dramas.php')) {
-                    if (endpoint.includes('action=spotlight')) {
-                        return { status: 'success', data: seed.dramas.find(d => d.spotlight) || seed.dramas[0] };
-                    }
-                    if (endpoint.includes('action=trending')) {
-                        return { status: 'success', data: seed.dramas.filter(d => d.trending) };
-                    }
-                    return { status: 'success', data: seed.dramas };
-                }
-                if (endpoint.includes('journals.php')) {
-                    return { status: 'success', data: seed.journals };
-                }
-                return { status: 'success', data: seed };
-            } catch (fallbackErr) {
-                console.error("Critical: Fallback fetch also failed.", fallbackErr);
-                throw err;
-            }
-        }
-    }
-
-    /* -------------------------------------------------------------------------
-       LIVE SEARCH (AJAX)
+       LIVE SEARCH (Pure JavaScript)
        ------------------------------------------------------------------------- */
     function initSearch() {
         const searchInput = document.getElementById('globalSearchInput');
@@ -133,9 +93,9 @@ const App = (() => {
             }
 
             debounceTimer = setTimeout(async () => {
-                const res = await apiRequest(`api/dramas.php?action=list&search=${encodeURIComponent(query)}`);
-                if (res && res.data && res.data.length > 0) {
-                    resultsBox.innerHTML = res.data.slice(0, 5).map(drama => `
+                const results = await DramaService.search(query);
+                if (results && results.length > 0) {
+                    resultsBox.innerHTML = results.slice(0, 5).map(drama => `
                         <div class="search-result-item" onclick="App.openQuickLog(${drama.id}, '${escapeHtml(drama.title)}')">
                             <img src="${drama.poster}" alt="${drama.title}" class="search-result-poster">
                             <div>
@@ -163,7 +123,6 @@ const App = (() => {
        MODAL CONTROLLERS & QUICK LOG
        ------------------------------------------------------------------------- */
     function initModals() {
-        // Close modal on background click or close button
         document.querySelectorAll('.modal-overlay').forEach(overlay => {
             overlay.addEventListener('click', (e) => {
                 if (e.target === overlay) {
@@ -200,27 +159,16 @@ const App = (() => {
                     rating: parseFloat(rating),
                     mood_tag: moodTag,
                     rewatch_count: parseInt(rewatchCount, 10),
-                    author: currentUser ? currentUser.name : 'DramaLover_Guest'
+                    author: currentUser ? currentUser.name : 'DramaLover'
                 };
 
-                try {
-                    const res = await apiRequest('api/journals.php?action=create', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
+                const created = await JournalService.create(payload);
+                showToast('Drama story logged to your journal! 📖');
+                document.getElementById('quickLogModal').classList.remove('open');
+                quickLogForm.reset();
 
-                    showToast('Drama story logged to your journal! 📖');
-                    document.getElementById('quickLogModal').classList.remove('open');
-                    quickLogForm.reset();
-
-                    // Dispatch custom event so pages can refresh journals dynamically
-                    window.dispatchEvent(new CustomEvent('journalAdded', { detail: res.data || payload }));
-                } catch (err) {
-                    showToast('Logged successfully (local preview mode)! 📖');
-                    document.getElementById('quickLogModal').classList.remove('open');
-                    window.dispatchEvent(new CustomEvent('journalAdded', { detail: payload }));
-                }
+                // Dispatch event so home page updates immediately
+                window.dispatchEvent(new CustomEvent('journalAdded', { detail: created }));
             });
         }
     }
@@ -264,26 +212,10 @@ const App = (() => {
     /* -------------------------------------------------------------------------
        AUTHENTICATION & USER STATE
        ------------------------------------------------------------------------- */
-    async function initAuth() {
-        const cached = localStorage.getItem('dramaboxd_user');
-        if (cached) {
-            try {
-                currentUser = JSON.parse(cached);
-                updateAuthUI();
-            } catch (e) {}
-        }
+    function initAuth() {
+        currentUser = AuthService.getCurrentUser();
+        updateAuthUI();
 
-        // Try checking server session via AJAX
-        try {
-            const authRes = await apiRequest('api/auth.php?action=me');
-            if (authRes && authRes.authenticated && authRes.user) {
-                currentUser = authRes.user;
-                localStorage.setItem('dramaboxd_user', JSON.stringify(currentUser));
-                updateAuthUI();
-            }
-        } catch (e) {}
-
-        // Auth Tabs in Modal
         const tabs = document.querySelectorAll('.modal-tab');
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
@@ -295,82 +227,41 @@ const App = (() => {
             });
         });
 
-        // Sign In Form
         const signInForm = document.getElementById('signInForm');
         if (signInForm) {
-            signInForm.addEventListener('submit', async (e) => {
+            signInForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const username = document.getElementById('loginUsername').value;
                 const password = document.getElementById('loginPassword').value;
 
-                try {
-                    const res = await apiRequest('api/auth.php?action=login', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ username, password })
-                    });
-                    if (res && res.success) {
-                        currentUser = res.user;
-                        localStorage.setItem('dramaboxd_user', JSON.stringify(currentUser));
-                        updateAuthUI();
-                        showToast(`Welcome back, ${currentUser.name || currentUser.username}! 🎉`);
-                        document.getElementById('authModal').classList.remove('open');
-                    } else {
-                        showToast(res.message || 'Login failed', true);
-                    }
-                } catch (err) {
-                    // Fallback client simulation
-                    currentUser = {
-                        id: 1,
-                        username: username,
-                        name: username.charAt(0).toUpperCase() + username.slice(1),
-                        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
-                        watched_count: 12
-                    };
-                    localStorage.setItem('dramaboxd_user', JSON.stringify(currentUser));
+                const res = AuthService.login(username, password);
+                if (res.success) {
+                    currentUser = res.user;
                     updateAuthUI();
-                    showToast(`Signed in as ${currentUser.name}! 🎉`);
+                    showToast(`Welcome back, ${currentUser.name}! 🎉`);
                     document.getElementById('authModal').classList.remove('open');
+                } else {
+                    showToast(res.message, true);
                 }
             });
         }
 
-        // Register Form
         const regForm = document.getElementById('registerForm');
         if (regForm) {
-            regForm.addEventListener('submit', async (e) => {
+            regForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const username = document.getElementById('regUsername').value;
                 const email = document.getElementById('regEmail').value;
                 const password = document.getElementById('regPassword').value;
 
-                try {
-                    const res = await apiRequest('api/auth.php?action=register', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ username, email, password, display_name: username })
-                    });
-                    if (res && res.success) {
-                        currentUser = res.user;
-                        localStorage.setItem('dramaboxd_user', JSON.stringify(currentUser));
-                        updateAuthUI();
-                        showToast(`Account created! Welcome, ${currentUser.name}! 🌟`);
-                        document.getElementById('authModal').classList.remove('open');
-                    } else {
-                        showToast(res.message || 'Registration failed', true);
-                    }
-                } catch (err) {
-                    currentUser = {
-                        id: Date.now(),
-                        username: username,
-                        name: username,
-                        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
-                        watched_count: 0
-                    };
-                    localStorage.setItem('dramaboxd_user', JSON.stringify(currentUser));
+                const res = AuthService.register(username, email, password);
+                if (res.success) {
+                    currentUser = res.user;
                     updateAuthUI();
-                    showToast(`Account created for ${currentUser.name}! 🌟`);
+                    showToast(`Account created! Welcome, ${currentUser.name}! 🌟`);
                     document.getElementById('authModal').classList.remove('open');
+                } else {
+                    showToast(res.message, true);
                 }
             });
         }
@@ -382,12 +273,15 @@ const App = (() => {
 
         if (currentUser) {
             authPill.innerHTML = `
-                <img src="${currentUser.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80'}" class="user-avatar-thumb" alt="Avatar">
+                <img src="${currentUser.avatar}" class="user-avatar-thumb" alt="Avatar">
                 <span>${escapeHtml(currentUser.name || currentUser.username)}</span>
             `;
             authPill.onclick = () => {
                 if (confirm(`Logged in as ${currentUser.name}. Do you want to sign out?`)) {
-                    logout();
+                    AuthService.logout();
+                    currentUser = null;
+                    updateAuthUI();
+                    showToast('Signed out successfully.');
                 }
             };
         } else {
@@ -401,16 +295,8 @@ const App = (() => {
         }
     }
 
-    function logout() {
-        currentUser = null;
-        localStorage.removeItem('dramaboxd_user');
-        apiRequest('api/auth.php?action=logout');
-        updateAuthUI();
-        showToast('Signed out successfully.');
-    }
-
     /* -------------------------------------------------------------------------
-       TOAST NOTIFICATION HELPER
+       TOAST NOTIFICATIONS
        ------------------------------------------------------------------------- */
     function showToast(message, isError = false) {
         let container = document.getElementById('toastContainer');
@@ -445,10 +331,8 @@ const App = (() => {
             .replace(/"/g, '&quot;');
     }
 
-    // Public API
     return {
         init,
-        apiRequest,
         showToast,
         openQuickLog,
         getCurrentUser: () => currentUser,
@@ -456,5 +340,4 @@ const App = (() => {
     };
 })();
 
-// Bootstrap
 document.addEventListener('DOMContentLoaded', App.init);
