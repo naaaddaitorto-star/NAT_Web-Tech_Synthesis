@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="obsidian">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dramaboxd — Asian Drama Journal, Ratings & Community</title>
-    <meta name="description" content="A Letterboxd-inspired Asian drama blogging, journalling, and community platform. Track watched K-dramas, C-dramas, J-dramas, log episode reflections, and share reviews.">
-    <meta name="keywords" content="Asian drama, K-drama, C-drama, J-drama, drama journal, drama ratings, Letterboxd for drama">
+    <meta name="description"
+        content="A Letterboxd-inspired Asian drama blogging, journalling, and community platform. Track watched K-dramas, C-dramas, J-dramas, log episode reflections, and share reviews.">
+    <meta name="keywords"
+        content="Asian drama, K-drama, C-drama, J-drama, drama journal, drama ratings, Letterboxd for drama">
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
+
 <body>
 
-    <!-- Site Header & Navigation -->
+    <!-- Header & Navigation -->
     <header class="site-header" id="siteHeader">
         <div class="container header-inner">
             <!-- Brand Logo -->
@@ -62,13 +66,20 @@
 
                 <!-- Primary CTA: Quick Log (+ Log) -->
                 <button class="btn-log" id="btnQuickLogOpen" onclick="App.openQuickLog(1, 'Queen of Tears')">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
                     <span>Log</span>
                 </button>
 
                 <!-- Auth / User Profile Pill -->
                 <button class="auth-pill" id="userAuthPill">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
                     <span>Sign In</span>
                 </button>
             </div>
@@ -108,51 +119,7 @@
             </div>
         </section>
 
-        <!-- 3. Curated Drama Recommendations & Vibe Matcher -->
-        <section class="recommendations-section" id="recommendationsSection" aria-label="Drama Recommendations">
-            <div class="container">
-                <div class="rec-header-row">
-                    <div class="section-header" style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;">
-                        <div class="section-title-wrap">
-                            <span class="section-subtitle">Tailored For You</span>
-                            <h2 class="section-title">What are you in the mood for?</h2>
-                        </div>
-                        <span style="font-size: 0.85rem; color: var(--text-muted);">Pick a vibe for instant drama matches</span>
-                    </div>
-
-                    <!-- Interactive Vibe Selector Bar -->
-                    <div class="vibe-filter-bar" id="vibeFilterBar" role="tablist">
-                        <button class="vibe-chip active" data-vibe="all">
-                            <span class="vibe-icon">✨</span> Top Recommendations
-                        </button>
-                        <button class="vibe-chip" data-vibe="tearjerker">
-                            <span class="vibe-icon">😭</span> Emotional Tearjerker
-                        </button>
-                        <button class="vibe-chip" data-vibe="healing">
-                            <span class="vibe-icon">🍵</span> Comfort & Healing
-                        </button>
-                        <button class="vibe-chip" data-vibe="butterflies">
-                            <span class="vibe-icon">🦋</span> Sweet Romance & Butterflies
-                        </button>
-                        <button class="vibe-chip" data-vibe="adrenaline">
-                            <span class="vibe-icon">⚡</span> Adrenaline & Twists
-                        </button>
-                        <button class="vibe-chip" data-vibe="timeloop">
-                            <span class="vibe-icon">⏳</span> Time Travel & Destiny
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Recommendations Grid (Loaded via AJAX) -->
-                <div class="recommendations-grid" id="recommendationsGrid">
-                    <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2rem 0;">
-                        Finding your personalized drama matches...
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 4. Story Journals & Blogs Section (Personal Reflections) -->
+        <!-- 3. Story Journals & Blogs Section (Personal Reflections) -->
         <section class="journals-section" id="storyJournalsSection">
             <div class="container">
                 <div class="section-header">
@@ -193,7 +160,8 @@
                         <div class="thread-item">
                             <div>
                                 <span class="thread-cat">Weekly Club</span>
-                                <div class="thread-title">October Melodrama Club: Queen of Tears vs Crash Landing On You</div>
+                                <div class="thread-title">October Melodrama Club: Queen of Tears vs Crash Landing On You
+                                </div>
                                 <div class="thread-meta">Started by K-Drama_Club • 3 hours ago</div>
                             </div>
                             <div class="thread-replies-badge">
@@ -204,7 +172,8 @@
                         <div class="thread-item">
                             <div>
                                 <span class="thread-cat">OST Favorites</span>
-                                <div class="thread-title">Drop the one Asian drama OST that gives you goosebumps instantly</div>
+                                <div class="thread-title">Drop the one Asian drama OST that gives you goosebumps
+                                    instantly</div>
                                 <div class="thread-meta">Started by SoundtrackCollector • 5 hours ago</div>
                             </div>
                             <div class="thread-replies-badge">
@@ -215,7 +184,8 @@
                         <div class="thread-item">
                             <div>
                                 <span class="thread-cat">Theory Corner</span>
-                                <div class="thread-title">Why time-travel in Korean dramas always revolves around family reconciliation</div>
+                                <div class="thread-title">Why time-travel in Korean dramas always revolves around family
+                                    reconciliation</div>
                                 <div class="thread-meta">Started by CinemaThinker • 1 day ago</div>
                             </div>
                             <div class="thread-replies-badge">
@@ -229,9 +199,12 @@
                         <div class="sidebar-box">
                             <h3 class="sidebar-title">Track. Journal. Connect.</h3>
                             <p class="sidebar-text">
-                                Unlike conventional rating platforms, Dramaboxd treats every Asian drama as a personal story chapter. Keep an intimate diary of plot twists, cried tears, and unforgettable soundtracks.
+                                Unlike conventional rating platforms, Dramaboxd treats every Asian drama as a personal
+                                story chapter. Keep an intimate diary of plot twists, cried tears, and unforgettable
+                                soundtracks.
                             </p>
-                            <button class="btn-log" style="width: 100%; justify-content: center;" onclick="App.openQuickLog(1, 'Queen of Tears')">
+                            <button class="btn-log" style="width: 100%; justify-content: center;"
+                                onclick="App.openQuickLog(1, 'Queen of Tears')">
                                 Start Your Drama Journal
                             </button>
                         </div>
@@ -289,15 +262,19 @@
 
                 <div class="form-group">
                     <label class="form-label" for="logTitle">Reflection / Journal Headline</label>
-                    <input type="text" id="logTitle" placeholder="e.g. Episode 12 had me staring at the ceiling at 3 AM" required>
+                    <input type="text" id="logTitle" placeholder="e.g. Episode 12 had me staring at the ceiling at 3 AM"
+                        required>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label" for="logReflection">Personal Diary Entry / Thoughts</label>
-                    <textarea id="logReflection" rows="4" placeholder="Write your unfiltered thoughts on the plot, characters, emotional moments, or acting..." required></textarea>
+                    <textarea id="logReflection" rows="4"
+                        placeholder="Write your unfiltered thoughts on the plot, characters, emotional moments, or acting..."
+                        required></textarea>
                 </div>
 
-                <button type="submit" class="btn-log" style="width: 100%; justify-content: center; padding: 0.75rem 1rem; font-size: 1rem;">
+                <button type="submit" class="btn-log"
+                    style="width: 100%; justify-content: center; padding: 0.75rem 1rem; font-size: 1rem;">
                     Save to Drama Diary 📖
                 </button>
             </form>
@@ -308,7 +285,7 @@
     <div class="modal-overlay" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
         <div class="modal-window">
             <button class="modal-close-btn" id="btnCloseAuthModal" aria-label="Close Modal">&times;</button>
-            
+
             <div class="modal-tabs">
                 <button class="modal-tab active" data-tab="signin">Sign In</button>
                 <button class="modal-tab" data-tab="register">Create Account</button>
@@ -329,7 +306,8 @@
                         <label class="form-label" for="loginPassword">Password</label>
                         <input type="password" id="loginPassword" placeholder="••••••••" required>
                     </div>
-                    <button type="submit" class="btn-log" style="width: 100%; justify-content: center; margin-top: 0.5rem;">
+                    <button type="submit" class="btn-log"
+                        style="width: 100%; justify-content: center; margin-top: 0.5rem;">
                         Sign In
                     </button>
                 </form>
@@ -354,7 +332,8 @@
                         <label class="form-label" for="regPassword">Password (6+ characters)</label>
                         <input type="password" id="regPassword" placeholder="••••••••" minlength="6" required>
                     </div>
-                    <button type="submit" class="btn-log" style="width: 100%; justify-content: center; margin-top: 0.5rem;">
+                    <button type="submit" class="btn-log"
+                        style="width: 100%; justify-content: center; margin-top: 0.5rem;">
                         Create Free Account
                     </button>
                 </form>
@@ -371,7 +350,8 @@
                         <span class="logo-icon">D</span>
                         <span class="brand-text">Dramaboxd</span>
                     </div>
-                    <p>The Letterboxd-inspired Asian drama journal. Record every episode, rate every performance, and preserve your emotional journey through Asian storytelling.</p>
+                    <p>The Letterboxd-inspired Asian drama journal. Record every episode, rate every performance, and
+                        preserve your emotional journey through Asian storytelling.</p>
                 </div>
                 <div class="footer-col">
                     <h4>Explore</h4>
@@ -400,15 +380,15 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <div>&copy; 2026 Dramaboxd. Built with Vanilla JavaScript, HTML5, and CSS.</div>
+                <div>&copy; 2026 Dramaboxd. Built with Vanilla JS, HTML, PHP, and CSS.</div>
                 <div>Web Technologies Synthesis Project</div>
             </div>
         </div>
     </footer>
 
     <!-- Core Scripts -->
-    <script src="assets/js/api.js"></script>
     <script src="assets/js/app.js"></script>
     <script src="assets/js/home.js"></script>
 </body>
+
 </html>
