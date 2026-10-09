@@ -1,11 +1,13 @@
 /**
- * Dramaboxd — Home Page Controller (AJAX MVC Client)
- * Loads Spotlight Drama, Trending Grid, and Story Journal Feed via AJAX
+ * Dramaboxd — Home Page Controller
+ * Pure JavaScript, HTML, and CSS.
+ * Loads Spotlight Drama, Trending Grid, Vibe Recommendations, and Story Journals.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
     loadHeroSpotlight();
     loadTrendingDramas();
+    initRecommendationMatcher();
     loadRecentJournals();
 
     // Listen for real-time journal additions from the Quick Log modal
@@ -23,8 +25,7 @@ async function loadHeroSpotlight() {
     if (!heroContainer) return;
 
     try {
-        const res = await App.apiRequest('api/dramas.php?action=spotlight');
-        const drama = res.data;
+        const drama = await DramaService.getSpotlight();
         if (!drama) return;
 
         heroContainer.innerHTML = `
@@ -89,10 +90,9 @@ async function loadTrendingDramas() {
     if (!grid) return;
 
     try {
-        const res = await App.apiRequest('api/dramas.php?action=trending&limit=8');
-        const dramas = res.data || [];
+        const dramas = await DramaService.getTrending(8);
 
-        if (dramas.length === 0) {
+        if (!dramas || dramas.length === 0) {
             grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">No trending dramas found.</div>`;
             return;
         }
@@ -134,17 +134,96 @@ async function loadTrendingDramas() {
 }
 
 /**
- * 3. Load Recent Journal Entries & Reflections
+ * 3. Curated Recommendations & Vibe Matcher
+ */
+async function loadRecommendations(vibe = 'all') {
+    const grid = document.getElementById('recommendationsGrid');
+    if (!grid) return;
+
+    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2rem 0;">Finding your matches...</div>`;
+
+    try {
+        const dramas = await DramaService.getRecommendations(vibe, 6);
+
+        if (!dramas || dramas.length === 0) {
+            grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2rem 0;">No dramas found for this vibe. Try selecting another mood!</div>`;
+            return;
+        }
+
+        grid.innerHTML = dramas.map(d => `
+            <div class="rec-card" onclick="goToDramaDetail(${d.id})">
+                <div class="rec-card-body">
+                    <div class="rec-poster-box">
+                        <img src="${d.poster}" alt="${App.escapeHtml(d.title)}" class="rec-poster-img" loading="lazy">
+                    </div>
+                    <div class="rec-info">
+                        <div class="rec-match-badge">
+                            <span>⚡</span> ${d.match_rate || Math.round(d.rating * 20)}% Match
+                        </div>
+                        <h3 class="rec-title">${App.escapeHtml(d.title)}</h3>
+                        <div class="rec-meta">
+                            <span class="country-pill country-${(d.country_code || 'kr').toLowerCase()}">${d.country_code || 'KR'}</span>
+                            <span>•</span>
+                            <span>${d.year}</span>
+                            <span>•</span>
+                            <span style="color: var(--rating-star); font-weight: 700;">★ ${d.rating.toFixed(1)}</span>
+                        </div>
+                        <div class="rec-genres">
+                            ${(d.genres || []).slice(0, 3).map(g => `<span class="rec-genre-pill">${App.escapeHtml(g)}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>
+                ${d.recommendation_reason ? `
+                    <div class="rec-reason-box">
+                        <span class="rec-reason-icon">💡</span>
+                        <span>${App.escapeHtml(d.recommendation_reason)}</span>
+                    </div>
+                ` : ''}
+                <div class="rec-card-footer" onclick="event.stopPropagation()">
+                    <button class="rec-action-btn" onclick="App.openQuickLog(${d.id}, '${App.escapeHtml(d.title)}')">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        Log / Journal
+                    </button>
+                    <button class="rec-action-btn" onclick="toggleWatchlist(${d.id}, '${App.escapeHtml(d.title)}')">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                        Watchlist
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    } catch (err) {
+        console.error("Failed to load recommendations:", err);
+    }
+}
+
+function initRecommendationMatcher() {
+    const filterBar = document.getElementById('vibeFilterBar');
+    if (!filterBar) return;
+
+    loadRecommendations('all');
+
+    const chips = filterBar.querySelectorAll('.vibe-chip');
+    chips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            chips.forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            const vibe = chip.getAttribute('data-vibe');
+            loadRecommendations(vibe);
+        });
+    });
+}
+
+/**
+ * 4. Load Recent Journal Entries & Reflections
  */
 async function loadRecentJournals() {
     const grid = document.getElementById('recentJournalsGrid');
     if (!grid) return;
 
     try {
-        const res = await App.apiRequest('api/journals.php?action=recent&limit=3');
-        const journals = res.data || [];
+        const journals = await JournalService.getRecent(3);
 
-        if (journals.length === 0) {
+        if (!journals || journals.length === 0) {
             grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">No journal entries yet. Be the first to log a drama reflection!</div>`;
             return;
         }
@@ -224,7 +303,6 @@ function markWatched(dramaId, title) {
 }
 
 function goToDramaDetail(dramaId) {
-    // When we create drama-detail.html in the next page, this will navigate smoothly
     window.location.href = `drama-detail.html?id=${dramaId}`;
 }
 
