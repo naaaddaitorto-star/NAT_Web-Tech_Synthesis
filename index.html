@@ -108,7 +108,51 @@
             </div>
         </section>
 
-        <!-- 3. Story Journals & Blogs Section (Personal Reflections) -->
+        <!-- 3. Curated Drama Recommendations & Vibe Matcher -->
+        <section class="recommendations-section" id="recommendationsSection" aria-label="Drama Recommendations">
+            <div class="container">
+                <div class="rec-header-row">
+                    <div class="section-header" style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;">
+                        <div class="section-title-wrap">
+                            <span class="section-subtitle">Tailored For You</span>
+                            <h2 class="section-title">What are you in the mood for?</h2>
+                        </div>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Pick a vibe for instant drama matches</span>
+                    </div>
+
+                    <!-- Interactive Vibe Selector Bar -->
+                    <div class="vibe-filter-bar" id="vibeFilterBar" role="tablist">
+                        <button class="vibe-chip active" data-vibe="all">
+                            <span class="vibe-icon">✨</span> Top Recommendations
+                        </button>
+                        <button class="vibe-chip" data-vibe="tearjerker">
+                            <span class="vibe-icon">😭</span> Emotional Tearjerker
+                        </button>
+                        <button class="vibe-chip" data-vibe="healing">
+                            <span class="vibe-icon">🍵</span> Comfort & Healing
+                        </button>
+                        <button class="vibe-chip" data-vibe="butterflies">
+                            <span class="vibe-icon">🦋</span> Sweet Romance & Butterflies
+                        </button>
+                        <button class="vibe-chip" data-vibe="adrenaline">
+                            <span class="vibe-icon">⚡</span> Adrenaline & Twists
+                        </button>
+                        <button class="vibe-chip" data-vibe="timeloop">
+                            <span class="vibe-icon">⏳</span> Time Travel & Destiny
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recommendations Grid (Loaded via AJAX) -->
+                <div class="recommendations-grid" id="recommendationsGrid">
+                    <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2rem 0;">
+                        Finding your personalized drama matches...
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Story Journals & Blogs Section (Personal Reflections) -->
         <section class="journals-section" id="storyJournalsSection">
             <div class="container">
                 <div class="section-header">
@@ -356,13 +400,14 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <div>&copy; 2026 Dramaboxd. Built with Vanilla JS, HTML, PHP, and CSS.</div>
+                <div>&copy; 2026 Dramaboxd. Built with Vanilla JavaScript, HTML5, and CSS.</div>
                 <div>Web Technologies Synthesis Project</div>
             </div>
         </div>
     </footer>
 
     <!-- Core Scripts -->
+    <script src="assets/js/api.js"></script>
     <script src="assets/js/app.js"></script>
     <script src="assets/js/home.js"></script>
 </body>
