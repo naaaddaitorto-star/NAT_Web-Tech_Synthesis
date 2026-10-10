@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="obsidian">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drama Detail | Dramaboxd</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+    <header class="site-header" id="siteHeader">
+        <div class="container header-inner">
+            <a href="index.html" class="brand-logo" id="brandLogoLink">
+                <span class="logo-icon">D</span>
+                <span class="brand-text">Dramaboxd</span>
+                <span class="brand-tag">Journal</span>
+            </a>
+
+            <nav class="main-nav" id="mainNavigation" aria-label="Main Navigation">
+                <a href="index.html" class="nav-link" id="navHome">Home</a>
+                <a href="dramas.html" class="nav-link active" id="navDramas">Dramas</a>
+                <a href="journal.html" class="nav-link" id="navJournals">Journals & Blogs</a>
+                <a href="community.html" class="nav-link" id="navCommunity">Community</a>
+            </nav>
+
+            <div class="header-search" id="headerSearchContainer">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="globalSearchInput" placeholder="Search dramas..." autocomplete="off">
+                <div class="search-results-dropdown" id="searchResultsDropdown"></div>
+            </div>
+
+            <div class="header-actions" id="headerActionGroup">
+                <div class="theme-selector" id="themeSelectorContainer">
+                    <button class="theme-btn" id="themeToggleBtn" title="Switch Theme" data-tooltip="Switch the site theme">
+                        <span>🎨</span>
+                        <span id="currentThemeLabel">Obsidian Dark</span>
+                        <span>▾</span>
+                    </button>
+                    <div class="theme-dropdown" id="themeDropdown">
+                        <button class="theme-option active" data-theme-set="obsidian">
+                            <span class="theme-dot obsidian"></span> Obsidian Dark
+                        </button>
+                        <button class="theme-option" data-theme-set="twilight">
+                            <span class="theme-dot twilight"></span> Twilight Neon
+                        </button>
+                        <button class="theme-option" data-theme-set="blossom">
+                            <span class="theme-dot blossom"></span> Blossom Rose
+                        </button>
+                        <button class="theme-option" data-theme-set="matcha">
+                            <span class="theme-dot matcha"></span> Matcha Sage
+                        </button>
+                    </div>
+                </div>
+
+                <button class="auth-pill" id="userAuthPill" data-tooltip="Sign in or view your profile">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <span>Sign In</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="page-shell">
+        <div class="container">
+            <div id="dramaDetailContainer" class="drama-detail-container"></div>
+        </div>
+    </main>
+
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/drama-detail.js"></script>
+</body>
+
+</html>
