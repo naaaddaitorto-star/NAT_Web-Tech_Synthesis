@@ -13,7 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Listen for real-time journal additions from the Quick Log modal
     window.addEventListener('journalAdded', (e) => {
         const newJournal = e.detail;
-        prependJournalCard(newJournal);
+        if (newJournal.visibility === 'public') {
+            prependJournalCard(newJournal);
+        }
     });
 });
 
@@ -247,7 +249,10 @@ function renderJournalCardHTML(j) {
                             <div class="journal-date">${App.escapeHtml(j.date || 'Recently')}</div>
                         </div>
                     </div>
-                    <span class="mood-badge">${App.escapeHtml(j.mood_tag || 'Reflective')}</span>
+                    <div class="journal-labels">
+                        <span class="mood-badge">${App.escapeHtml(j.mood_tag || 'Reflective')}</span>
+                        <span class="visibility-badge public">Public blog</span>
+                    </div>
                 </div>
                 <div style="margin-top: 1rem;">
                     <div class="journal-drama-badge">${App.escapeHtml(j.drama_title)}</div>
@@ -260,6 +265,19 @@ function renderJournalCardHTML(j) {
                     <div class="journal-tags-row">
                         ${(j.tags || []).map(t => `<span class="journal-tag">#${App.escapeHtml(t)}</span>`).join(' ')}
                     </div>
+                    ${(j.similar_dramas || []).length ? `
+                        <div class="entry-similar-dramas">
+                            <h3>Similar dramas suggested</h3>
+                            <div class="similar-drama-links">
+                                ${j.similar_dramas.filter(drama => Number(drama.id) > 0).map(drama => `
+                                    <a class="similar-drama-link" href="drama-detail.html?id=${Number(drama.id)}" onclick="event.stopPropagation()">
+                                        <img src="${App.escapeHtml(drama.poster)}" alt="" loading="lazy">
+                                        <span>${App.escapeHtml(drama.title)}</span>
+                                    </a>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
                 </div>
             </div>
             <div class="journal-footer">
@@ -273,9 +291,9 @@ function renderJournalCardHTML(j) {
                         ${j.comments_count || 0}
                     </span>
                 </div>
-                <button style="color: var(--accent); font-size: 0.85rem; font-weight: 600;" onclick="viewFullJournal(${j.id})">
+                <a class="journal-read-link" href="journal.html?id=${encodeURIComponent(j.id)}">
                     Read Story →
-                </button>
+                </a>
             </div>
         </article>
     `;
