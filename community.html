@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="obsidian">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community | Dramaboxd</title>
+    <meta name="description" content="Talk Asian dramas with fellow fans and find viewers who share your taste.">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+    <header class="site-header" id="siteHeader">
+        <div class="container header-inner">
+            <a href="index.html" class="brand-logo" id="brandLogoLink">
+                <span class="logo-icon">D</span>
+                <span class="brand-text">Dramaboxd</span>
+                <span class="brand-tag">Journal</span>
+            </a>
+
+            <nav class="main-nav" id="mainNavigation" aria-label="Main Navigation">
+                <a href="index.html" class="nav-link" id="navHome">Home</a>
+                <a href="dramas.html" class="nav-link" id="navDramas">Dramas</a>
+                <a href="journal.html" class="nav-link" id="navJournals">Journals & Blogs</a>
+                <a href="community.html" class="nav-link active" id="navCommunity" aria-current="page">Community</a>
+            </nav>
+
+            <div class="header-search" id="headerSearchContainer">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="globalSearchInput" placeholder="Search dramas..." autocomplete="off">
+                <div class="search-results-dropdown" id="searchResultsDropdown"></div>
+            </div>
+
+            <div class="header-actions" id="headerActionGroup">
+                <div class="theme-selector" id="themeSelectorContainer">
+                    <button class="theme-btn" id="themeToggleBtn" title="Switch Theme" data-tooltip="Switch the site theme">
+                        <span>🎨</span>
+                        <span id="currentThemeLabel">Obsidian Dark</span>
+                        <span>▾</span>
+                    </button>
+                    <div class="theme-dropdown" id="themeDropdown">
+                        <button class="theme-option active" data-theme-set="obsidian"><span class="theme-dot obsidian"></span> Obsidian Dark</button>
+                        <button class="theme-option" data-theme-set="twilight"><span class="theme-dot twilight"></span> Twilight Neon</button>
+                        <button class="theme-option" data-theme-set="blossom"><span class="theme-dot blossom"></span> Blossom Rose</button>
+                        <button class="theme-option" data-theme-set="matcha"><span class="theme-dot matcha"></span> Matcha Sage</button>
+                    </div>
+                </div>
+                <button class="auth-pill" id="userAuthPill" data-tooltip="Sign in or view your profile">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <span>Sign In</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="page-shell community-page">
+        <section class="community-hero">
+            <div class="container community-hero-inner">
+                <div>
+                    <span class="section-subtitle">Your people, your next conversation</span>
+                    <h1 class="browse-title">The drama club</h1>
+                    <p class="browse-subtitle">Trade theories, celebrate your favorite stories, and meet fans who love the same things you do.</p>
+                </div>
+                <div class="community-hero-stats" aria-label="Community activity">
+                    <div class="stat-pill"><span class="stat-label">Discussions</span><strong id="communityThreadCount">—</strong></div>
+                    <div class="stat-pill"><span class="stat-label">Drama fans</span><strong id="communityMemberCount">—</strong></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="community-content-section">
+            <div class="container">
+                <div class="community-section-heading">
+                    <div>
+                        <span class="section-subtitle">Find your corner</span>
+                        <h2 class="section-title">Talk about what you love</h2>
+                    </div>
+                    <button class="btn-log" id="newDiscussionButton" type="button">＋ Start a discussion</button>
+                </div>
+
+                <div class="community-tabs" role="tablist" aria-label="Community sections">
+                    <button class="community-tab active" type="button" role="tab" aria-selected="true" data-panel="discussions">Discussions</button>
+                    <button class="community-tab" type="button" role="tab" aria-selected="false" data-panel="fans">Find your people</button>
+                </div>
+
+                <section class="community-panel" id="discussionsPanel" role="tabpanel">
+                    <div class="community-discussion-toolbar">
+                        <div class="community-feed-tabs" role="tablist" aria-label="Discussion feed">
+                            <button class="community-feed-tab active" type="button" data-filter="all">All topics</button>
+                            <button class="community-feed-tab" type="button" data-filter="following">Following</button>
+                            <button class="community-feed-tab" type="button" data-filter="hot">Trending</button>
+                        </div>
+                        <label class="journal-search community-search" for="communitySearchInput">
+                            <span>⌕</span>
+                            <input id="communitySearchInput" type="search" placeholder="Search discussions...">
+                        </label>
+                    </div>
+
+                    <form class="community-composer hidden" id="discussionComposer">
+                        <div class="community-composer-heading">
+                            <div>
+                                <span class="section-subtitle">Open the floor</span>
+                                <h3>Start a discussion</h3>
+                            </div>
+                            <button class="modal-close-btn" id="closeDiscussionComposer" type="button" aria-label="Close discussion form">&times;</button>
+                        </div>
+                        <div class="form-row community-composer-row">
+                            <div class="form-group">
+                                <label class="form-label" for="discussionCategory">Topic</label>
+                                <select id="discussionCategory" required>
+                                    <option value="Watch Club">Watch Club</option>
+                                    <option value="Soundtrack Love">Soundtrack Love</option>
+                                    <option value="Theory Corner">Theory Corner</option>
+                                    <option value="Recommendations">Recommendations</option>
+                                    <option value="General Chat">General Chat</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="discussionTitle">Your question or topic</label>
+                                <input id="discussionTitle" type="text" maxlength="120" placeholder="What are you thinking about?" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="discussionBody">Add a little context <span class="optional-label">Optional</span></label>
+                            <textarea id="discussionBody" rows="3" maxlength="500" placeholder="Give fellow fans something to jump into..."></textarea>
+                        </div>
+                        <div class="community-composer-footer">
+                            <span class="visibility-help">Discussions are saved in this browser for this demo.</span>
+                            <button class="btn-log" type="submit">Post topic</button>
+                        </div>
+                    </form>
+
+                    <div class="community-thread-list" id="communityThreadList" aria-live="polite">
+                        <div class="community-loading">Finding the latest conversations…</div>
+                    </div>
+                </section>
+
+                <section class="community-panel hidden" id="fansPanel" role="tabpanel">
+                    <div class="taste-match-intro">
+                        <div>
+                            <span class="section-subtitle">Better together</span>
+                            <h2>Find fans on your wavelength</h2>
+                            <p>Choose the genres you love. We’ll surface community members who have written about the same kinds of dramas.</p>
+                        </div>
+                        <div class="taste-match-score">
+                            <span>Your taste</span>
+                            <strong id="tasteGenreCount">0 genres</strong>
+                        </div>
+                    </div>
+                    <div class="taste-genre-picker" id="tasteGenrePicker" aria-label="Choose your favorite genres"></div>
+                    <div class="community-members-heading">
+                        <div>
+                            <h3>Fans you might click with</h3>
+                            <p id="memberMatchSummary">Based on shared drama genres</p>
+                        </div>
+                    </div>
+                    <div class="community-member-grid" id="communityMemberGrid" aria-live="polite">
+                        <div class="community-loading">Finding fans with similar taste…</div>
+                    </div>
+                </section>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal-overlay" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
+        <div class="modal-window">
+            <button class="modal-close-btn" id="btnCloseAuthModal" aria-label="Close Modal">&times;</button>
+            <div class="modal-tabs">
+                <button class="modal-tab active" data-tab="signin" type="button">Sign In</button>
+                <button class="modal-tab" data-tab="register" type="button">Create Account</button>
+            </div>
+            <div id="signInTabContent">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="authModalTitle">Welcome Back</h3>
+                    <p class="modal-subtitle">Sign in to keep your journal entries under your profile.</p>
+                </div>
+                <form id="signInForm">
+                    <div class="form-group"><label class="form-label" for="loginUsername">Username or Email</label><input type="text" id="loginUsername" required></div>
+                    <div class="form-group"><label class="form-label" for="loginPassword">Password</label><input type="password" id="loginPassword" required></div>
+                    <button type="submit" class="btn-log journal-submit-button">Sign In</button>
+                </form>
+            </div>
+            <div id="registerTabContent" style="display: none;">
+                <div class="modal-header">
+                    <h3 class="modal-title">Join Dramaboxd</h3>
+                    <p class="modal-subtitle">Create a profile for your drama journal.</p>
+                </div>
+                <form id="registerForm">
+                    <div class="form-group"><label class="form-label" for="regUsername">Choose Username</label><input type="text" id="regUsername" required></div>
+                    <div class="form-group"><label class="form-label" for="regEmail">Email Address</label><input type="email" id="regEmail" required></div>
+                    <div class="form-group"><label class="form-label" for="regPassword">Password (6+ characters)</label><input type="password" id="regPassword" minlength="6" required></div>
+                    <button type="submit" class="btn-log journal-submit-button">Create Account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/community.js"></script>
+</body>
+
+</html>
