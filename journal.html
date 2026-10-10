@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="obsidian">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journals & Blogs | Dramaboxd</title>
+    <meta name="description" content="Read public Asian drama stories or keep your own private viewing journal.">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+    <header class="site-header" id="siteHeader">
+        <div class="container header-inner">
+            <a href="index.html" class="brand-logo" id="brandLogoLink">
+                <span class="logo-icon">D</span>
+                <span class="brand-text">Dramaboxd</span>
+                <span class="brand-tag">Journal</span>
+            </a>
+
+            <nav class="main-nav" id="mainNavigation" aria-label="Main Navigation">
+                <a href="index.html" class="nav-link" id="navHome">Home</a>
+                <a href="dramas.html" class="nav-link" id="navDramas">Dramas</a>
+                <a href="journal.html" class="nav-link active" id="navJournals">Journals & Blogs</a>
+                <a href="community.html" class="nav-link" id="navCommunity">Community</a>
+            </nav>
+
+            <div class="header-search" id="headerSearchContainer">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="globalSearchInput" placeholder="Search dramas..." autocomplete="off">
+                <div class="search-results-dropdown" id="searchResultsDropdown"></div>
+            </div>
+
+            <div class="header-actions" id="headerActionGroup">
+                <div class="theme-selector" id="themeSelectorContainer">
+                    <button class="theme-btn" id="themeToggleBtn" title="Switch Theme" data-tooltip="Switch the site theme">
+                        <span>🎨</span>
+                        <span id="currentThemeLabel">Obsidian Dark</span>
+                        <span>▾</span>
+                    </button>
+                    <div class="theme-dropdown" id="themeDropdown">
+                        <button class="theme-option active" data-theme-set="obsidian"><span class="theme-dot obsidian"></span> Obsidian Dark</button>
+                        <button class="theme-option" data-theme-set="twilight"><span class="theme-dot twilight"></span> Twilight Neon</button>
+                        <button class="theme-option" data-theme-set="blossom"><span class="theme-dot blossom"></span> Blossom Rose</button>
+                        <button class="theme-option" data-theme-set="matcha"><span class="theme-dot matcha"></span> Matcha Sage</button>
+                    </div>
+                </div>
+                <button class="btn-log" id="btnQuickLogOpen" data-tooltip="Write a journal entry" onclick="App.openQuickLog(1, 'Queen of Tears')">
+                    <span>＋</span><span>Write</span>
+                </button>
+                <button class="auth-pill" id="userAuthPill" data-tooltip="Sign in or view your profile">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <span>Sign In</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="page-shell journal-page">
+        <section class="journal-hero">
+            <div class="container journal-hero-inner">
+                <div>
+                    <span class="section-subtitle">Stories & reflections</span>
+                    <h1 class="browse-title">Journals & Blogs</h1>
+                    <p class="browse-subtitle">Share a public story with fellow drama fans, or keep a private diary just for yourself. You choose the audience every time you write.</p>
+                </div>
+                <button class="btn-log" type="button" data-tooltip="Choose a drama and write a new entry" onclick="App.openQuickLog(1, 'Queen of Tears')">＋ Write an entry</button>
+            </div>
+        </section>
+
+        <section class="journal-feed-section">
+            <div class="container">
+                <div class="journal-feed-heading">
+                    <div>
+                        <span class="section-subtitle" id="feedEyebrow">Community</span>
+                        <h2 class="section-title" id="feedTitle">Public blog posts</h2>
+                    </div>
+                    <label class="journal-search" for="journalSearchInput">
+                        <span>⌕</span>
+                        <input id="journalSearchInput" type="search" placeholder="Search stories...">
+                    </label>
+                </div>
+
+                <div class="journal-view-tabs" id="journalViewTabs" role="tablist" aria-label="Journal views">
+                    <button class="journal-view-tab active" type="button" role="tab" aria-selected="true" data-view="public">Public blogs</button>
+                    <button class="journal-view-tab" type="button" role="tab" aria-selected="false" data-view="mine">My journal</button>
+                </div>
+
+                <p class="journal-privacy-note" id="journalPrivacyNote">Public posts are visible in the community feed. Private entries are never included here.</p>
+                <div class="journal-feed-grid" id="journalEntriesGrid" aria-live="polite"></div>
+            </div>
+        </section>
+
+        <section class="journal-feed-section hidden" id="journalArticleView">
+            <div class="container">
+                <button class="btn-secondary journal-back-button" id="journalBackButton" type="button">← Back to stories</button>
+                <article class="journal-article" id="journalArticleContent"></article>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal-overlay" id="quickLogModal" role="dialog" aria-modal="true" aria-labelledby="logModalTitle">
+        <div class="modal-window">
+            <button class="modal-close-btn" id="btnCloseQuickLog" aria-label="Close Modal">&times;</button>
+            <div class="modal-header">
+                <h3 class="modal-title" id="logModalTitle">Log & Reflect</h3>
+                <p class="modal-subtitle" id="logModalSubtitle">Journaling your experience</p>
+            </div>
+            <form id="quickLogForm">
+                <input type="hidden" id="logDramaId" value="1">
+                <input type="hidden" id="logDramaTitle" value="Queen of Tears">
+                <input type="hidden" id="logRatingValue" value="5">
+                <div class="form-group">
+                    <label class="form-label">Your Rating</label>
+                    <div class="star-rating-selector" id="interactiveStarRating">
+                        <span class="star active" data-val="1">★</span>
+                        <span class="star active" data-val="2">★</span>
+                        <span class="star active" data-val="3">★</span>
+                        <span class="star active" data-val="4">★</span>
+                        <span class="star active" data-val="5">★</span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="logMoodTag">Your Mood Tag</label>
+                        <select id="logMoodTag">
+                            <option value="Cried buckets of tears 😭">Cried buckets of tears 😭</option>
+                            <option value="Comfort healing 🎸">Comfort healing 🎸</option>
+                            <option value="Warm Butterflies 🦋">Warm Butterflies 🦋</option>
+                            <option value="Edge of my seat ⚡">Edge of my seat ⚡</option>
+                            <option value="Heartbreak masterpiece 💔">Heartbreak masterpiece 💔</option>
+                            <option value="Pure serotonin ✨">Pure serotonin ✨</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="logRewatchCount">Rewatch Number</label>
+                        <input type="number" id="logRewatchCount" min="1" max="50" value="1">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="logTitle">Reflection / Blog Headline</label>
+                    <input type="text" id="logTitle" placeholder="Give your entry a title" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="logReflection">Your thoughts</label>
+                    <textarea id="logReflection" rows="4" placeholder="Write about the plot, characters, or moments that stayed with you..." required></textarea>
+                </div>
+                <div class="form-group similar-drama-picker">
+                    <div class="similar-drama-picker-heading">
+                        <label class="form-label">Suggest similar dramas <span class="optional-label">Optional</span></label>
+                        <span id="similarDramaCount" class="similar-drama-count">0/3 selected</span>
+                    </div>
+                    <p class="visibility-help">Choose up to three matches based on shared genres and moods. These will appear with your entry.</p>
+                    <div id="logSimilarDramaChoices" class="similar-drama-choices" aria-live="polite"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="logVisibility">Who can see this entry?</label>
+                    <select id="logVisibility" required>
+                        <option value="" selected disabled>Choose public or private</option>
+                        <option value="private">Private — only in My journal</option>
+                        <option value="public">Public — share as a blog post</option>
+                    </select>
+                    <small class="visibility-help">Private entries stay in this browser under your current profile. Public entries appear in the community blog feed.</small>
+                </div>
+                <button type="submit" class="btn-log journal-submit-button">Save entry</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
+        <div class="modal-window">
+            <button class="modal-close-btn" id="btnCloseAuthModal" aria-label="Close Modal">&times;</button>
+            <div class="modal-tabs">
+                <button class="modal-tab active" data-tab="signin" type="button">Sign In</button>
+                <button class="modal-tab" data-tab="register" type="button">Create Account</button>
+            </div>
+            <div id="signInTabContent">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="authModalTitle">Welcome Back</h3>
+                    <p class="modal-subtitle">Sign in to keep your journal entries under your profile.</p>
+                </div>
+                <form id="signInForm">
+                    <div class="form-group"><label class="form-label" for="loginUsername">Username or Email</label><input type="text" id="loginUsername" required></div>
+                    <div class="form-group"><label class="form-label" for="loginPassword">Password</label><input type="password" id="loginPassword" required></div>
+                    <button type="submit" class="btn-log journal-submit-button">Sign In</button>
+                </form>
+            </div>
+            <div id="registerTabContent" style="display: none;">
+                <div class="modal-header">
+                    <h3 class="modal-title">Join Dramaboxd</h3>
+                    <p class="modal-subtitle">Create a profile for your drama journal.</p>
+                </div>
+                <form id="registerForm">
+                    <div class="form-group"><label class="form-label" for="regUsername">Choose Username</label><input type="text" id="regUsername" required></div>
+                    <div class="form-group"><label class="form-label" for="regEmail">Email Address</label><input type="email" id="regEmail" required></div>
+                    <div class="form-group"><label class="form-label" for="regPassword">Password (6+ characters)</label><input type="password" id="regPassword" minlength="6" required></div>
+                    <button type="submit" class="btn-log journal-submit-button">Create Account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/journal.js"></script>
+</body>
+
+</html>
