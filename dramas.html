@@ -231,6 +231,25 @@
                     <textarea id="logReflection" rows="4" placeholder="Write your thoughts on the plot, characters, emotional moments, or acting..." required></textarea>
                 </div>
 
+                <div class="form-group similar-drama-picker">
+                    <div class="similar-drama-picker-heading">
+                        <label class="form-label">Suggest similar dramas <span class="optional-label">Optional</span></label>
+                        <span id="similarDramaCount" class="similar-drama-count">0/3 selected</span>
+                    </div>
+                    <p class="visibility-help">Choose up to three matches based on shared genres and moods. These will appear with your entry.</p>
+                    <div id="logSimilarDramaChoices" class="similar-drama-choices" aria-live="polite"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="logVisibility">Who can see this entry?</label>
+                    <select id="logVisibility" required>
+                        <option value="" selected disabled>Choose public or private</option>
+                        <option value="private">Private — only in My journal</option>
+                        <option value="public">Public — share as a blog post</option>
+                    </select>
+                    <small class="visibility-help">Private entries stay in this browser under your current profile. Public entries appear in the community blog feed.</small>
+                </div>
+
                 <button type="submit" class="btn-log" style="width: 100%; justify-content: center; padding: 0.75rem 1rem; font-size: 1rem;">Save to Drama Diary 📖</button>
             </form>
         </div>
