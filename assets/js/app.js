@@ -56,6 +56,31 @@ const DramaService = (() => {
         );
     }
 
+    async function getSimilar(dramaId, limit = 8) {
+        const dramas = await loadData();
+        const source = dramas.find(drama => drama.id === parseInt(dramaId, 10));
+        if (!source) return [];
+
+        const sourceGenres = (source.genres || []).map(genre => genre.toLowerCase());
+        const sourceVibes = (source.vibes || []).map(vibe => vibe.toLowerCase());
+
+        return dramas
+            .filter(drama => drama.id !== source.id)
+            .map(drama => {
+                const genres = (drama.genres || []).map(genre => genre.toLowerCase());
+                const vibes = (drama.vibes || []).map(vibe => vibe.toLowerCase());
+                const sharedGenres = genres.filter(genre => sourceGenres.includes(genre)).length;
+                const sharedVibes = vibes.filter(vibe => sourceVibes.includes(vibe)).length;
+                const sameCountry = drama.country_code === source.country_code;
+                const score = sharedGenres * 3 + sharedVibes * 2 + (sameCountry ? 1 : 0);
+                return { drama, score };
+            })
+            .filter(match => match.score > 0)
+            .sort((a, b) => b.score - a.score || b.drama.rating - a.drama.rating)
+            .slice(0, limit)
+            .map(match => match.drama);
+    }
+
     async function getRecommendations(vibe = 'all', limit = 6) {
         const dramas = await loadData();
         let list = [...dramas];
@@ -85,6 +110,7 @@ const DramaService = (() => {
         getTrending,
         getById,
         search,
+        getSimilar,
         getRecommendations
     };
 })();
@@ -113,23 +139,42 @@ const JournalService = (() => {
         }
     }
 
-    async function getRecent(limit = 6) {
+    async function getPublicEntries() {
         const seeds = await loadSeed();
         const custom = getLocalCustomJournals();
-        const all = [...custom, ...seeds];
-        return all.slice(0, limit);
+        return [...custom.filter(entry => entry.visibility === 'public'), ...seeds];
+    }
+
+    async function getRecent(limit = 6) {
+        const entries = await getPublicEntries();
+        return entries.slice(0, limit);
+    }
+
+    function getMyEntries(ownerId = 'guest') {
+        const owner = String(ownerId);
+        return getLocalCustomJournals().filter(entry =>
+            String(entry.owner_id || 'guest') === owner
+        );
     }
 
     async function create(payload) {
+        if (!['public', 'private'].includes(payload.visibility)) {
+            throw new Error('Choose whether this entry should be public or private.');
+        }
+
         const custom = getLocalCustomJournals();
         const newEntry = {
             id: Date.now(),
             drama_id: parseInt(payload.drama_id || 1, 10),
             drama_title: payload.drama_title || 'Featured Drama',
             author: payload.author || 'DramaLover',
-            author_avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
+            author_avatar: payload.author_avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
+            owner_id: String(payload.owner_id || 'guest'),
+            visibility: payload.visibility,
             title: payload.title || 'Personal Drama Reflection',
+            content: payload.content || payload.excerpt || '',
             excerpt: payload.content || payload.excerpt || '',
+            similar_dramas: Array.isArray(payload.similar_dramas) ? payload.similar_dramas.slice(0, 3) : [],
             rating: parseFloat(payload.rating || 5.0),
             rewatch_count: parseInt(payload.rewatch_count || 1, 10),
             mood_tag: payload.mood_tag || 'Heartfelt ❤️',
@@ -145,6 +190,8 @@ const JournalService = (() => {
     }
 
     return {
+        getPublicEntries,
+        getMyEntries,
         getRecent,
         create
     };
@@ -341,6 +388,11 @@ const App = (() => {
 
         const quickLogForm = document.getElementById('quickLogForm');
         if (quickLogForm) {
+            const similarChoices = document.getElementById('logSimilarDramaChoices');
+            if (similarChoices) {
+                similarChoices.addEventListener('change', updateSimilarDramaChoiceLimit);
+            }
+
             quickLogForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const dramaId = document.getElementById('logDramaId').value;
@@ -350,6 +402,13 @@ const App = (() => {
                 const rewatchCount = document.getElementById('logRewatchCount').value;
                 const reflection = document.getElementById('logReflection').value;
                 const logTitle = document.getElementById('logTitle').value || `Reflections on ${dramaTitle}`;
+                const visibility = document.getElementById('logVisibility').value;
+                const similarDramas = Array.from(document.querySelectorAll('input[name="logSimilarDrama"]:checked')).map(option => ({
+                    id: Number(option.value),
+                    title: option.dataset.title,
+                    poster: option.dataset.poster,
+                    country: option.dataset.country
+                }));
 
                 const payload = {
                     drama_id: dramaId,
@@ -359,15 +418,27 @@ const App = (() => {
                     rating: parseFloat(rating),
                     mood_tag: moodTag,
                     rewatch_count: parseInt(rewatchCount, 10),
-                    author: currentUser ? currentUser.name : 'DramaLover'
+                    author: currentUser ? currentUser.name : 'DramaLover',
+                    author_avatar: currentUser ? currentUser.avatar : undefined,
+                    owner_id: currentUser ? currentUser.id : 'guest',
+                    visibility,
+                    similar_dramas: similarDramas
                 };
 
-                const created = await JournalService.create(payload);
-                showToast('Drama story logged to your journal! 📖');
-                document.getElementById('quickLogModal').classList.remove('open');
-                quickLogForm.reset();
+                try {
+                    const created = await JournalService.create(payload);
+                    showToast(visibility === 'public'
+                        ? 'Your public blog post is live in the community feed! 📖'
+                        : 'Your private journal entry was saved. 🔒');
+                    document.getElementById('quickLogModal').classList.remove('open');
+                    quickLogForm.reset();
+                    updateSimilarDramaChoiceLimit();
 
-                window.dispatchEvent(new CustomEvent('journalAdded', { detail: created }));
+                    window.dispatchEvent(new CustomEvent('journalAdded', { detail: created }));
+                } catch (err) {
+                    console.error('Failed to save journal entry:', err);
+                    showToast(err.message || 'Could not save your journal entry.', true);
+                }
             });
         }
     }
@@ -404,8 +475,48 @@ const App = (() => {
             dramaIdInput.value = dramaId;
             dramaTitleInput.value = dramaTitle;
             if (subtitle) subtitle.textContent = `Journaling your experience for: ${dramaTitle}`;
+            updateSimilarDramaChoices(dramaId);
             modal.classList.add('open');
         }
+    }
+
+    async function updateSimilarDramaChoices(dramaId) {
+        const container = document.getElementById('logSimilarDramaChoices');
+        if (!container) return;
+        container.innerHTML = '<p class="similar-drama-loading">Finding dramas with similar genres and moods…</p>';
+
+        const candidates = await DramaService.getSimilar(dramaId);
+        if (String(document.getElementById('logDramaId').value) !== String(dramaId)) return;
+        if (!candidates.length) {
+            container.innerHTML = '<p class="similar-drama-loading">No similar dramas were found for this title.</p>';
+            return;
+        }
+
+        container.innerHTML = candidates.map(drama => `
+            <label class="similar-drama-option">
+                <input type="checkbox" name="logSimilarDrama" value="${drama.id}"
+                    data-title="${escapeHtml(drama.title)}"
+                    data-poster="${escapeHtml(drama.poster)}"
+                    data-country="${escapeHtml(drama.country || '')}">
+                <img src="${escapeHtml(drama.poster)}" alt="" loading="lazy">
+                <span>
+                    <strong>${escapeHtml(drama.title)}</strong>
+                    <small>${escapeHtml((drama.genres || []).slice(0, 2).join(' · '))}</small>
+                </span>
+            </label>
+        `).join('');
+        updateSimilarDramaChoiceLimit();
+    }
+
+    function updateSimilarDramaChoiceLimit() {
+        const options = Array.from(document.querySelectorAll('input[name="logSimilarDrama"]'));
+        const selectedCount = options.filter(option => option.checked).length;
+        options.forEach(option => {
+            option.disabled = !option.checked && selectedCount >= 3;
+            option.closest('.similar-drama-option').classList.toggle('selected', option.checked);
+        });
+        const count = document.getElementById('similarDramaCount');
+        if (count) count.textContent = `${selectedCount}/3 selected`;
     }
 
     /* Auth */
