@@ -65,11 +65,11 @@ async function loadHeroSpotlight() {
                         </div>
                     ` : ''}
                     <div class="hero-actions">
-                        <button class="btn-log" onclick="App.openQuickLog(${drama.id}, '${App.escapeHtml(drama.title)}')">
+                        <button class="btn-log" data-tooltip="Log your thoughts on this drama" onclick="App.openQuickLog(${drama.id}, '${App.escapeHtml(drama.title)}')">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                             Log & Journal Drama
                         </button>
-                        <button class="btn-secondary" onclick="toggleWatchlist(${drama.id}, '${App.escapeHtml(drama.title)}')">
+                        <button class="btn-secondary" data-tooltip="Add this drama to your watchlist" onclick="toggleWatchlist(${drama.id}, '${App.escapeHtml(drama.title)}')">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
                             Add to Watchlist
                         </button>
@@ -107,13 +107,13 @@ async function loadTrendingDramas() {
                             <span class="overlay-rating">★ ${d.rating.toFixed(1)}</span>
                         </div>
                         <div class="overlay-actions">
-                            <button class="icon-action-btn" title="Quick Log / Diary" onclick="App.openQuickLog(${d.id}, '${App.escapeHtml(d.title)}')">
+                            <button class="icon-action-btn" title="Quick Log / Diary" data-tooltip="Quick log this drama" onclick="App.openQuickLog(${d.id}, '${App.escapeHtml(d.title)}')">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                             </button>
-                            <button class="icon-action-btn" title="Mark as Watched" onclick="markWatched(${d.id}, '${App.escapeHtml(d.title)}')">
+                            <button class="icon-action-btn" title="Mark as Watched" data-tooltip="Mark as watched" onclick="markWatched(${d.id}, '${App.escapeHtml(d.title)}')">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
                             </button>
-                            <button class="icon-action-btn" title="Add to Watchlist" onclick="toggleWatchlist(${d.id}, '${App.escapeHtml(d.title)}')">
+                            <button class="icon-action-btn" title="Add to Watchlist" data-tooltip="Add to watchlist" onclick="toggleWatchlist(${d.id}, '${App.escapeHtml(d.title)}')">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
                             </button>
                         </div>
@@ -180,11 +180,11 @@ async function loadRecommendations(vibe = 'all') {
                     </div>
                 ` : ''}
                 <div class="rec-card-footer" onclick="event.stopPropagation()">
-                    <button class="rec-action-btn" onclick="App.openQuickLog(${d.id}, '${App.escapeHtml(d.title)}')">
+                    <button class="rec-action-btn" data-tooltip="Write a quick journal entry" onclick="App.openQuickLog(${d.id}, '${App.escapeHtml(d.title)}')">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                         Log / Journal
                     </button>
-                    <button class="rec-action-btn" onclick="toggleWatchlist(${d.id}, '${App.escapeHtml(d.title)}')">
+                    <button class="rec-action-btn" data-tooltip="Add to your watchlist" onclick="toggleWatchlist(${d.id}, '${App.escapeHtml(d.title)}')">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
                         Watchlist
                     </button>
