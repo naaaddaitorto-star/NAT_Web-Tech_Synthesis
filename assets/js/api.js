@@ -52,6 +52,31 @@ const DramaService = (() => {
         );
     }
 
+    async function getSimilar(dramaId, limit = 8) {
+        const dramas = await loadData();
+        const source = dramas.find(drama => drama.id === parseInt(dramaId, 10));
+        if (!source) return [];
+
+        const sourceGenres = (source.genres || []).map(genre => genre.toLowerCase());
+        const sourceVibes = (source.vibes || []).map(vibe => vibe.toLowerCase());
+
+        return dramas
+            .filter(drama => drama.id !== source.id)
+            .map(drama => {
+                const genres = (drama.genres || []).map(genre => genre.toLowerCase());
+                const vibes = (drama.vibes || []).map(vibe => vibe.toLowerCase());
+                const sharedGenres = genres.filter(genre => sourceGenres.includes(genre)).length;
+                const sharedVibes = vibes.filter(vibe => sourceVibes.includes(vibe)).length;
+                const sameCountry = drama.country_code === source.country_code;
+                const score = sharedGenres * 3 + sharedVibes * 2 + (sameCountry ? 1 : 0);
+                return { drama, score };
+            })
+            .filter(match => match.score > 0)
+            .sort((a, b) => b.score - a.score || b.drama.rating - a.drama.rating)
+            .slice(0, limit)
+            .map(match => match.drama);
+    }
+
     /**
      * Vibe & Mood Recommendation Matcher
      */
@@ -85,6 +110,7 @@ const DramaService = (() => {
         getTrending,
         getById,
         search,
+        getSimilar,
         getRecommendations
     };
 })();
@@ -113,23 +139,40 @@ const JournalService = (() => {
         }
     }
 
-    async function getRecent(limit = 6) {
+    async function getPublicEntries() {
         const seeds = await loadSeed();
         const custom = getLocalCustomJournals();
-        // Custom user-created journals come first
-        const all = [...custom, ...seeds];
-        return all.slice(0, limit);
+        return [...custom.filter(entry => entry.visibility === 'public'), ...seeds];
+    }
+
+    async function getRecent(limit = 6) {
+        const entries = await getPublicEntries();
+        return entries.slice(0, limit);
+    }
+
+    function getMyEntries(ownerId = 'guest') {
+        const owner = String(ownerId);
+        return getLocalCustomJournals().filter(entry =>
+            String(entry.owner_id || 'guest') === owner
+        );
     }
 
     async function create(payload) {
+        if (!['public', 'private'].includes(payload.visibility)) {
+            throw new Error('Choose whether this entry should be public or private.');
+        }
+
         const custom = getLocalCustomJournals();
         const newEntry = {
             id: Date.now(),
             drama_id: parseInt(payload.drama_id || 1, 10),
             drama_title: payload.drama_title || 'Featured Drama',
             author: payload.author || 'DramaLover',
-            author_avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
+            author_avatar: payload.author_avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
+            owner_id: String(payload.owner_id || 'guest'),
+            visibility: payload.visibility,
             title: payload.title || 'Personal Drama Reflection',
+            content: payload.content || payload.excerpt || '',
             excerpt: payload.content || payload.excerpt || '',
             rating: parseFloat(payload.rating || 5.0),
             rewatch_count: parseInt(payload.rewatch_count || 1, 10),
@@ -146,6 +189,8 @@ const JournalService = (() => {
     }
 
     return {
+        getPublicEntries,
+        getMyEntries,
         getRecent,
         create
     };
