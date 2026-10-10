@@ -43,7 +43,7 @@
             <div class="header-actions" id="headerActionGroup">
                 <!-- Theme Switcher -->
                 <div class="theme-selector" id="themeSelectorContainer">
-                    <button class="theme-btn" id="themeToggleBtn" title="Switch Theme">
+                    <button class="theme-btn" id="themeToggleBtn" title="Switch Theme" data-tooltip="Switch the site theme">
                         <span>🎨</span>
                         <span id="currentThemeLabel">Obsidian Dark</span>
                         <span>▾</span>
@@ -65,7 +65,7 @@
                 </div>
 
                 <!-- Primary CTA: Quick Log (+ Log) -->
-                <button class="btn-log" id="btnQuickLogOpen" onclick="App.openQuickLog(1, 'Queen of Tears')">
+                <button class="btn-log" id="btnQuickLogOpen" data-tooltip="Open quick log" onclick="App.openQuickLog(1, 'Queen of Tears')">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2.5">
                         <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -75,7 +75,7 @@
                 </button>
 
                 <!-- Auth / User Profile Pill -->
-                <button class="auth-pill" id="userAuthPill">
+                <button class="auth-pill" id="userAuthPill" data-tooltip="Sign in or view your profile">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                         <circle cx="12" cy="7" r="4"></circle>
@@ -119,7 +119,36 @@
             </div>
         </section>
 
-        <!-- 3. Story Journals & Blogs Section (Personal Reflections) -->
+        <!-- 3. Recommendations & Vibe Matcher -->
+        <section class="recommendations-section" id="recommendationsSection">
+            <div class="container">
+                <div class="rec-header-row">
+                    <div class="section-header">
+                        <div class="section-title-wrap">
+                            <span class="section-subtitle">For You</span>
+                            <h2 class="section-title">Recommended Drama Matches</h2>
+                        </div>
+                    </div>
+
+                    <div class="vibe-filter-bar" id="vibeFilterBar" aria-label="Drama recommendation filters">
+                        <button class="vibe-chip active" data-vibe="all" type="button"><span class="vibe-icon">✨</span>All moods</button>
+                        <button class="vibe-chip" data-vibe="tearjerker" type="button"><span class="vibe-icon">😭</span>Tearjerker</button>
+                        <button class="vibe-chip" data-vibe="healing" type="button"><span class="vibe-icon">🌿</span>Healing</button>
+                        <button class="vibe-chip" data-vibe="butterflies" type="button"><span class="vibe-icon">🫶</span>Butterflies</button>
+                        <button class="vibe-chip" data-vibe="adrenaline" type="button"><span class="vibe-icon">⚡</span>Adrenaline</button>
+                        <button class="vibe-chip" data-vibe="timeloop" type="button"><span class="vibe-icon">⏳</span>Time-loop</button>
+                    </div>
+                </div>
+
+                <div class="recommendations-grid" id="recommendationsGrid">
+                    <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2rem 0;">
+                        Finding your drama matches...
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Story Journals & Blogs Section (Personal Reflections) -->
         <section class="journals-section" id="storyJournalsSection">
             <div class="container">
                 <div class="section-header">
